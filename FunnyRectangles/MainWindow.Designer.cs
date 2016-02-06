@@ -33,9 +33,9 @@
             // 
             // btnAddRectangle
             // 
-            this.btnAddRectangle.Location = new System.Drawing.Point(274, 118);
+            this.btnAddRectangle.Location = new System.Drawing.Point(12, 12);
             this.btnAddRectangle.Name = "btnAddRectangle";
-            this.btnAddRectangle.Size = new System.Drawing.Size(75, 23);
+            this.btnAddRectangle.Size = new System.Drawing.Size(171, 23);
             this.btnAddRectangle.TabIndex = 0;
             this.btnAddRectangle.Text = "Add rectangle";
             this.btnAddRectangle.UseVisualStyleBackColor = true;

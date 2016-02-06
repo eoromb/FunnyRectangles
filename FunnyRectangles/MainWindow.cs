@@ -1,83 +1,106 @@
-﻿using FunnyRectangles.Models;
+﻿using FunnyRectangles.Controllers;
+using FunnyRectangles.Interfaces;
+using FunnyRectangles.Models;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
 
 namespace FunnyRectangles
 {
-    partial class MainWindow : Form
+    partial class MainWindow : Form, IView
     {
-        #region Constants
-        private const int MinimumMoveDelta = 10;
-        #endregion
-
         #region Fields and properties
-        private int _prevX;
-        private int _prevy;
-        private bool _bDragging;
-        private Scene _scene; 
+        private MainWindowController _wndController;
         #endregion
 
         #region Constructors
-        public MainWindow(Scene scene)
+        public MainWindow()
         {
-            if (scene == null)
-            {
-                throw new ArgumentNullException(nameof(scene));
-            }
+           
             InitializeComponent();
-            _scene = scene;
+        }
+        #endregion
 
-            this.ClientSize = new Size(_scene.Width, _scene.Height);
-            this.AutoScrollMinSize = new Size(_scene.Width, _scene.Height);
+        #region Public methods
+        public void SetController(MainWindowController wndController)
+        {
+            if (wndController == null)
+            {
+                throw new ArgumentNullException(nameof(wndController));
+            }
+            _wndController = wndController;
+        }
+        #endregion
+
+        #region Private methods
+        private void CheckOperationValidity()
+        {
+            if (_wndController == null)
+            {
+                throw new InvalidOperationException("Window controller has not been set.");
+            }
         }
         #endregion
 
         #region Overrides
         protected override void OnPaint(PaintEventArgs e)
         {
+            CheckOperationValidity();
             var graphics = e.Graphics;
-            var clippingRectWithSceneCoordinates = e.ClipRectangle;
-            clippingRectWithSceneCoordinates.Offset(-AutoScrollPosition.X, -AutoScrollPosition.Y);
             graphics.TranslateTransform(AutoScrollPosition.X, AutoScrollPosition.Y);
-            _scene.Draw(graphics, /*e.ClipRectangle*/clippingRectWithSceneCoordinates);
-          
+            _wndController.Draw(graphics, e.ClipRectangle);
+
             base.OnPaint(e);
         }
         protected override void OnMouseDown(MouseEventArgs e)
         {
-            var rectangleToInvalidate = _scene.BringInFrontObjectAtCoordinates(e.X, e.Y);
-            _scene.SelectObjectAtCoordinates(e.X, e.Y);
-            if (rectangleToInvalidate != Rectangle.Empty)
+            CheckOperationValidity();
+
+            try
             {
-                Invalidate(rectangleToInvalidate);
+                _wndController.BringInFrontObjectAtCoordinates(e.X, e.Y);
             }
-            _bDragging = true;
-            _prevX = e.X;
-            _prevy = e.Y;
+            catch (Exception ex)    // Shouldn't do like this in real application
+            {
+                MessageBox.Show($"Unable to bring object in fron. {ex.Message}", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            try
+            {
+                _wndController.BeginDragging(e.X, e.Y);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Unable to begin dragging. {ex.Message}", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
             base.OnMouseDown(e);
         }
         protected override void OnMouseUp(MouseEventArgs e)
         {
-            _bDragging = false;
-            _prevX = -1;
-            _prevy = -1;
-            _scene.ClearSelection();
+            CheckOperationValidity();
+            try
+            {
+                _wndController.EndDragging();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Unable to end dragging. {ex.Message}", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
             base.OnMouseUp(e);
         }
         protected override void OnMouseMove(MouseEventArgs e)
         {
-            if (_bDragging &&
-                CheckForMinimumMove(e.X, e.Y))
+            CheckOperationValidity();
+
+            try
             {
-                var invalidatedRect = _scene.OffsetSelectedObject(e.X - _prevX, e.Y - _prevy);
-                _prevX = e.X;
-                _prevy = e.Y;
-                if (invalidatedRect != Rectangle.Empty)
-                {
-                    Invalidate(invalidatedRect);
-                }
+                _wndController.OffsetOnDragging(e.X, e.Y);
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error while mouse move. {ex.Message}", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+           
             base.OnMouseMove(e);
         }
         #endregion
@@ -85,13 +108,46 @@ namespace FunnyRectangles
         #region Events handlers
         private void btnAddRectangle_Click(object sender, EventArgs e)
         {
-            _scene.AddRectangle();
-            Invalidate();
+            CheckOperationValidity();
+
+            try
+            {
+                _wndController.AddRectangle();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Unable to add rectangle. {ex.Message}", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
         #endregion
 
-        #region Private methods
-        private bool CheckForMinimumMove(int x, int y) => Math.Abs(x - _prevX) > 10 || Math.Abs(y - _prevy) > 10; 
+        #region IView
+        public void SetSize(int width, int height)
+        {
+            ClientSize = new Size(width, height);
+            AutoScrollMinSize = ClientSize;
+            MaximumSize = ClientSize;
+        }
+        public void InvalidateSceneRectangle(Rectangle rectangleToInvalidate)
+        {
+            if (rectangleToInvalidate != Rectangle.Empty)
+            {
+                rectangleToInvalidate.Offset(AutoScrollPosition.X, AutoScrollPosition.Y);
+                Invalidate(rectangleToInvalidate);
+            }
+        }
+        public Rectangle TranslatePageRectangleIntoScene(Rectangle pageRectangle)
+        {
+            var sceneRectangle = pageRectangle;
+            sceneRectangle.Offset(-AutoScrollPosition.X, -AutoScrollPosition.Y);
+            return sceneRectangle;
+        }
+
+        public void TranslateCoordinatesPageIntoScene(int x, int y, out int sceneX, out int sceneY)
+        {
+            sceneX = x - AutoScrollPosition.X;
+            sceneY = y - AutoScrollPosition.Y;
+        }
         #endregion
     }
 }

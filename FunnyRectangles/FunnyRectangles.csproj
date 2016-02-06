@@ -46,8 +46,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\MainWindowController.cs" />
     <Compile Include="Interfaces\IOffsetsAdjuster.cs" />
     <Compile Include="Interfaces\IGraphicObject.cs" />
+    <Compile Include="Interfaces\IView.cs" />
     <Compile Include="MainWindow.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -3,8 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FunnyRectangles.Models
 {
@@ -22,7 +20,6 @@ namespace FunnyRectangles.Models
 
         public int Width { get; private set; }
         public int Height { get; private set; }
-
         #endregion
 
         #region Constructors
@@ -55,11 +52,14 @@ namespace FunnyRectangles.Models
         /// <summary>
         /// Creates rectangle using IGraphicObjectBuilder and adds it at scene.
         /// </summary>
-        public void AddRectangle()
+        /// <returns>Returns bounding rectangle that should be invalidated</returns>
+        public Rectangle AddRectangle()
         {
             lock (_graphicObjects)
             {
-                _graphicObjects.AddLast(_graphicObjectBuilder.CreateRectangle());
+                var newRect = _graphicObjectBuilder.CreateRectangle();
+                _graphicObjects.AddLast(newRect);
+                return newRect.GetBoundRectangle();
             }
         }
         /// <summary>

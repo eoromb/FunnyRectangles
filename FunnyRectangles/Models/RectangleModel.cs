@@ -11,7 +11,7 @@ namespace FunnyRectangles.Models
     /// <summary>
     /// Describes a rectangle
     /// </summary>
-    class RectangleModel : IGraphicObject
+    class RectangleModel : IGraphicObject, IDisposable
     {
         #region Fields and properties
         private Rectangle _boundingRecangle;
@@ -92,6 +92,26 @@ namespace FunnyRectangles.Models
             _rectangle = rect;
             _boundingRecangle = rect;
         }
+
+        #region IDisposable Support
+        private bool _bDisposed;
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_bDisposed)
+            {
+                if (disposing)
+                {
+                    _pen?.Dispose();
+                    _brush?.Dispose();
+                }
+                _bDisposed = true;
+            }
+        }
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+        #endregion
 
         #endregion
     }
