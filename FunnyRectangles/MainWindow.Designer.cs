@@ -28,12 +28,38 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
+            this.btnAddRectangle = new System.Windows.Forms.Button();
+            this.SuspendLayout();
+            // 
+            // btnAddRectangle
+            // 
+            this.btnAddRectangle.Location = new System.Drawing.Point(274, 118);
+            this.btnAddRectangle.Name = "btnAddRectangle";
+            this.btnAddRectangle.Size = new System.Drawing.Size(75, 23);
+            this.btnAddRectangle.TabIndex = 0;
+            this.btnAddRectangle.Text = "Add rectangle";
+            this.btnAddRectangle.UseVisualStyleBackColor = true;
+            this.btnAddRectangle.Click += new System.EventHandler(this.btnAddRectangle_Click);
+            // 
+            // MainWindow
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Text = "Form1";
+            this.ClientSize = new System.Drawing.Size(800, 555);
+            this.Controls.Add(this.btnAddRectangle);
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.Name = "MainWindow";
+            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "FunnyRectangles";
+            this.ResumeLayout(false);
+
         }
 
         #endregion
+
+        private System.Windows.Forms.Button btnAddRectangle;
     }
 }
 

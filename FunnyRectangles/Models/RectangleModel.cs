@@ -14,7 +14,6 @@ namespace FunnyRectangles.Models
         private Rectangle _rectangle;
         private Brush _brush;
         private Pen _pen;
-
         #endregion
 
         #region Constructors
@@ -34,20 +33,22 @@ namespace FunnyRectangles.Models
         #region IGraphicObject
         public void Move(int dx, int dy)
         {
-            _rectangle.X += dx;
-            _rectangle.Y += dy;
+            _rectangle.Offset(dx, dy);
         }
-
-        public void Draw(Graphics graphics)
+        public void Draw(Graphics graphics, Rectangle clipRectangle)
         {
             if (graphics == null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
-            graphics.DrawRectangle(_pen, _rectangle);
-            graphics.FillRectangle(_brush, _rectangle);
+            if (_rectangle.IntersectsWith(clipRectangle))
+            {
+                graphics.DrawRectangle(_pen, _rectangle);
+                graphics.FillRectangle(_brush, _rectangle);
+            }
         }
         public bool ContainsPoint(int x, int y) => _rectangle.Contains(x, y);
+        public Rectangle GetBoundRectangle() => _rectangle;
         #endregion
     }
 }
