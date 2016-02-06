@@ -52,6 +52,8 @@ namespace FunnyRectangles.Models
         /// <param name="dy">Displacement along the y-axis</param>
         public void Offset(int dx, int dy)
         {
+            CheckForNotDisposed();
+
             _rectangle.Offset(dx, dy);
             _boundingRecangle.Offset(dx, dy);
         }
@@ -62,6 +64,8 @@ namespace FunnyRectangles.Models
         /// <param name="clipRectangle">Clipping rectangle</param>
         public void Draw(Graphics graphics, Rectangle clipRectangle)
         {
+            CheckForNotDisposed();
+
             if (graphics == null)
             {
                 throw new ArgumentNullException(nameof(graphics));
@@ -78,7 +82,12 @@ namespace FunnyRectangles.Models
         /// <param name="x">Point's x-coordinate</param>
         /// <param name="y">Point's y-coordinate</param>
         /// <returns>Returns true if rectangle contains point otherwise returns false</returns>
-        public bool ContainsPoint(int x, int y) => _rectangle.Contains(x, y);
+        public bool ContainsPoint(int x, int y)
+        {
+            CheckForNotDisposed();
+
+            return _rectangle.Contains(x, y);
+        }
         /// <summary>
         /// Returns bounding rectangle
         /// </summary>
@@ -87,11 +96,22 @@ namespace FunnyRectangles.Models
         #endregion
 
         #region Private methods
+        /// <summary>
+        /// Checks if object has been disposed
+        /// </summary>
+        private void CheckForNotDisposed()
+        {
+            if (_bDisposed)
+            {
+                throw new ObjectDisposedException(nameof(RectangleModel));
+            }
+        }
         private void SetRectangle(Rectangle rect)
         {
             _rectangle = rect;
             _boundingRecangle = rect;
         }
+        #endregion
 
         #region IDisposable Support
         private bool _bDisposed;
@@ -111,8 +131,6 @@ namespace FunnyRectangles.Models
         {
             Dispose(true);
         }
-        #endregion
-
         #endregion
     }
 }

@@ -18,15 +18,26 @@ namespace FunnyRectangles
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-          //  AppDomain.CurrentDomain.UnhandledException
 
             var sceneWidth = 1000;
-            int sceneHeight = 500;
-            var scene = new Scene(sceneWidth, sceneHeight, new RandomGraphicObjectBuilder(sceneWidth, sceneHeight, 50, 50), new SimpleRectangleOffsetsAdjuster(sceneWidth, sceneHeight));
+            var sceneHeight = 500;
+            var minRectWidth = 50;
+            var minRectHeight = 50;
+            var scene = new Scene(sceneWidth, sceneHeight, new RandomGraphicObjectBuilder(sceneWidth, sceneHeight, minRectWidth, minRectHeight),
+                new SimpleRectangleOffsetsAdjuster(sceneWidth, sceneHeight));
             var mainWnd = new MainWindow();
             var mainWndController = new MainWindowController(mainWnd, scene);
             mainWnd.SetController(mainWndController);
-            Application.Run(mainWnd);
+            try
+            {
+                Application.Run(mainWnd);
+            }
+            catch
+            {
+                // Log something
+            }
         }
+
+       
     }
 }
