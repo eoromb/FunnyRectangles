@@ -19,7 +19,7 @@ namespace FunnyRectangles
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            var sceneWidth = 1000;
+            var sceneWidth = 1300;
             var sceneHeight = 700;
             var minRectWidth = 50;
             var minRectHeight = 50;
