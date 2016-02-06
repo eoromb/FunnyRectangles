@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FunnyRectangles.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,7 +17,11 @@ namespace FunnyRectangles
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainWindow());
+
+            var sceneWidth = 500;
+            int sceneHeight = 500;
+            var scene = new Scene(sceneWidth, sceneHeight, new RandomGraphicObjectBuilder(sceneWidth, sceneHeight, 50, 50), new SimpleRectangleOffsetsAdjuster(sceneWidth, sceneHeight));
+            Application.Run(new MainWindow(scene));
         }
     }
 }

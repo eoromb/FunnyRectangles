@@ -12,6 +12,7 @@ namespace FunnyRectangles.Models
     {
         #region Fields and properties
         private readonly object _selectedObjectLock = new object();
+        private readonly IOffsetsAdjuster _offsetAdjuster;
         private readonly IGraphicObjectBuilder _graphicObjectBuilder;
         private readonly LinkedList<IGraphicObject> _graphicObjects = new LinkedList<IGraphicObject>();
         private IGraphicObject _selectedGraphicObject;
@@ -22,7 +23,7 @@ namespace FunnyRectangles.Models
         #endregion
 
         #region Constructors
-        public Scene(int width, int height, IGraphicObjectBuilder graphObjBuilder)
+        public Scene(int width, int height, IGraphicObjectBuilder graphObjBuilder, IOffsetsAdjuster offsetAdjuster)
         {
             if (width < 0)
             {
@@ -36,9 +37,14 @@ namespace FunnyRectangles.Models
             {
                 throw new ArgumentNullException(nameof(graphObjBuilder));
             }
+            if (offsetAdjuster == null)
+            {
+                throw new ArgumentNullException(nameof(offsetAdjuster));
+            }
             Width = width;
             Height = height;
             _graphicObjectBuilder = graphObjBuilder;
+            _offsetAdjuster = offsetAdjuster;
         }
         #endregion
 
@@ -97,12 +103,14 @@ namespace FunnyRectangles.Models
                 _selectedGraphicObject = null;
             }
         }
+
         /// <summary>
         /// Moves selected graphic object by dx, dy. It is not allowed to move object outside of scene
         /// </summary>
         /// <param name="dx">x offset</param>
         /// <param name="dy">y offset</param>
-        public void MoveSelectedObject(int dx, int dy)
+        /// <returns>Returns bounding rectangle that should be invalidated</returns>
+        public Rectangle MoveSelectedObject(int dx, int dy)
         {
             lock (_selectedObjectLock)
             {
@@ -110,30 +118,15 @@ namespace FunnyRectangles.Models
                 {
                     int resDx;
                     int resDy;
-                    AdjustDxDy(_selectedGraphicObject, dx, dy, out resDx, out resDy);
-                    _selectedGraphicObject?.Move(resDx, resDy);
+                    var initialboundingRect = _selectedGraphicObject.GetBoundRectangle();
+                    //initialboundingRect.Inflate(1, 1);
+                    _offsetAdjuster.AdjustOffsets(_selectedGraphicObject, dx, dy, out resDx, out resDy);
+                    _selectedGraphicObject.Move(resDx, resDy);
+                    var resultingboundingRect = _selectedGraphicObject.GetBoundRectangle();
+                    //resultingboundingRect.Inflate(1, 1);
+                    return Rectangle.Union(initialboundingRect, resultingboundingRect);
                 }
-            }
-        }
-        private void AdjustDxDy(IGraphicObject graphicObject, int dx, int dy, out int resDx, out int resDy)
-        {
-            var boundRect = graphicObject.GetBoundRectangle();
-            boundRect.Offset(dx, dy);
-            if (dx < 0)
-            {
-                resDx = boundRect.Left < 0 ? dx - boundRect.Left : dx;
-            }
-            else
-            {
-                resDx = boundRect.Right > Width ? dx - (boundRect.Right - Width) : dx;
-            }
-            if (dy < 0)
-            {
-                resDy = boundRect.Top < 0 ? dy - boundRect.Top : dy;
-            }
-            else
-            {
-                resDy = boundRect.Bottom > Height ? dy - (boundRect.Bottom - Height) : dy;
+                return Rectangle.Empty;
             }
         }
         /// <summary>

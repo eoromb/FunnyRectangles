@@ -11,9 +11,20 @@ namespace FunnyRectangles.Models
     class RectangleModel : IGraphicObject
     {
         #region Fields and properties
+        private Rectangle _boundingRecangle;
         private Rectangle _rectangle;
         private Brush _brush;
         private Pen _pen;
+        private Pen Pen
+        {
+            get { return _pen; }
+            set
+            {
+                _pen = value;
+                var penWidth = (int)(_pen.Width + 1.0F);
+                _boundingRecangle.Inflate(penWidth, penWidth);
+            }
+        }
         #endregion
 
         #region Constructors
@@ -24,8 +35,8 @@ namespace FunnyRectangles.Models
         }
         public RectangleModel(Rectangle rect, Pen pen, Brush brush)
         {
-            _rectangle = rect;
-            _pen = pen;
+            SetRectangle(rect);
+            Pen = pen;
             _brush = brush;
         }
         #endregion
@@ -34,6 +45,7 @@ namespace FunnyRectangles.Models
         public void Move(int dx, int dy)
         {
             _rectangle.Offset(dx, dy);
+            _boundingRecangle.Offset(dx, dy);
         }
         public void Draw(Graphics graphics, Rectangle clipRectangle)
         {
@@ -43,12 +55,21 @@ namespace FunnyRectangles.Models
             }
             if (_rectangle.IntersectsWith(clipRectangle))
             {
-                graphics.DrawRectangle(_pen, _rectangle);
                 graphics.FillRectangle(_brush, _rectangle);
+                graphics.DrawRectangle(_pen, _rectangle);
             }
         }
         public bool ContainsPoint(int x, int y) => _rectangle.Contains(x, y);
-        public Rectangle GetBoundRectangle() => _rectangle;
+        public Rectangle GetBoundRectangle() => _boundingRecangle;
+        #endregion
+
+        #region Private methods
+        private void SetRectangle(Rectangle rect)
+        {
+            _rectangle = rect;
+            _boundingRecangle = rect;
+        }
+
         #endregion
     }
 }

@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Interfaces\IOffsetsAdjuster.cs" />
     <Compile Include="Interfaces\IGraphicObject.cs" />
     <Compile Include="MainWindow.cs">
       <SubType>Form</SubType>
@@ -54,6 +55,7 @@
       <DependentUpon>MainWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Interfaces\IGraphicObjectBuilder.cs" />
+    <Compile Include="Models\SimpleRectangleOffsetsAdjuster.cs" />
     <Compile Include="Models\RandomGraphicObjectBuilder.cs" />
     <Compile Include="Models\RectangleModel.cs" />
     <Compile Include="Models\Scene.cs" />
