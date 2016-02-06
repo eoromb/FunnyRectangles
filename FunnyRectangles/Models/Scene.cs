@@ -92,11 +92,13 @@ namespace FunnyRectangles.Models
         /// </summary>
         /// <param name="x">X-coordinate</param>
         /// <param name="y">Y-coordinate</param>
-        public void SelectObjectAtCoordinates(int x, int y)
+        /// <returns>Returns true if object has been selected otherwise - false</returns>
+        public bool SelectObjectAtCoordinates(int x, int y)
         {
             lock (_selectedObjectLock)
             {
                 _selectedGraphicObject = GetObjectByCoordinate(x, y);
+                return _selectedGraphicObject != null;
             }
         }
         /// <summary>
@@ -125,11 +127,9 @@ namespace FunnyRectangles.Models
                     int resDx;
                     int resDy;
                     var initialboundingRect = _selectedGraphicObject.GetBoundRectangle();
-                    //initialboundingRect.Inflate(1, 1);
                     _offsetAdjuster.AdjustOffsets(_selectedGraphicObject, dx, dy, out resDx, out resDy);
                     _selectedGraphicObject.Offset(resDx, resDy);
                     var resultingboundingRect = _selectedGraphicObject.GetBoundRectangle();
-                    //resultingboundingRect.Inflate(1, 1);
                     return Rectangle.Union(initialboundingRect, resultingboundingRect);
                 }
                 return Rectangle.Empty;

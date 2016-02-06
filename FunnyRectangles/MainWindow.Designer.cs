@@ -48,9 +48,7 @@
             this.ClientSize = new System.Drawing.Size(800, 555);
             this.Controls.Add(this.btnAddRectangle);
             this.MaximizeBox = false;
-            this.MinimizeBox = false;
             this.Name = "MainWindow";
-            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "FunnyRectangles";
             this.ResumeLayout(false);

@@ -20,7 +20,7 @@ namespace FunnyRectangles
             Application.SetCompatibleTextRenderingDefault(false);
 
             var sceneWidth = 1000;
-            var sceneHeight = 500;
+            var sceneHeight = 700;
             var minRectWidth = 50;
             var minRectHeight = 50;
             var scene = new Scene(sceneWidth, sceneHeight, new RandomGraphicObjectBuilder(sceneWidth, sceneHeight, minRectWidth, minRectHeight),

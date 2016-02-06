@@ -7,6 +7,9 @@ using System.Windows.Forms;
 
 namespace FunnyRectangles
 {
+    /// <summary>
+    /// Main window class. You must set controller before starting
+    /// </summary>
     partial class MainWindow : Form, IView
     {
         #region Fields and properties
@@ -16,7 +19,6 @@ namespace FunnyRectangles
         #region Constructors
         public MainWindow()
         {
-           
             InitializeComponent();
         }
         #endregion
@@ -122,12 +124,21 @@ namespace FunnyRectangles
         #endregion
 
         #region IView
+        /// <summary>
+        /// Sets view current sizes
+        /// </summary>
+        /// <param name="width">Width of scene</param>
+        /// <param name="height">Height of scene</param>
         public void SetSize(int width, int height)
         {
+            AutoScrollMinSize = new Size(width, height);
             ClientSize = new Size(width, height);
-            AutoScrollMinSize = ClientSize;
-            MaximumSize = ClientSize;
+            MaximumSize = new Size(width + 20, height + 40);
         }
+        /// <summary>
+        /// Invalidates rectangle. 
+        /// </summary>
+        /// <param name="rectangleToInvalidate">Rectangle to invalidate. In scene coordinate system</param>
         public void InvalidateSceneRectangle(Rectangle rectangleToInvalidate)
         {
             if (rectangleToInvalidate != Rectangle.Empty)
@@ -136,6 +147,11 @@ namespace FunnyRectangles
                 Invalidate(rectangleToInvalidate);
             }
         }
+        /// <summary>
+        /// Translates rectangles coordinates from page's into scene's coordinate system
+        /// </summary>
+        /// <param name="pageRectangle">Rectangle to process</param>
+        /// <returns></returns>
         public Rectangle TranslatePageRectangleIntoScene(Rectangle pageRectangle)
         {
             var sceneRectangle = pageRectangle;
@@ -143,6 +159,13 @@ namespace FunnyRectangles
             return sceneRectangle;
         }
 
+        /// <summary>
+        /// Translates coordinates from page's into scene's coordinate system
+        /// </summary>
+        /// <param name="x">X-coordinate in page's coordinate system</param>
+        /// <param name="y">Y-coordinate in page's coordinate system</param>
+        /// <param name="sceneX">X-coordinate in scene's coordinate system</param>
+        /// <param name="sceneY">Y-coordinate in scene's coordinate system</param>
         public void TranslateCoordinatesPageIntoScene(int x, int y, out int sceneX, out int sceneY)
         {
             sceneX = x - AutoScrollPosition.X;
