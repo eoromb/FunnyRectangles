@@ -77,6 +77,7 @@ namespace FunnyRectangles.Models
                 {
                     if (node.Value.ContainsPoint(x, y))
                     {
+                        // Move necessary node to the list's tail. So while drawing it will be drawn least.
                         _graphicObjects.Remove(node);
                         _graphicObjects.AddLast(node);
                         return node.Value.GetBoundRectangle();
@@ -146,7 +147,10 @@ namespace FunnyRectangles.Models
             {
                 foreach (var graphicObject in _graphicObjects)
                 {
-                    graphicObject.Draw(graphics, clipRectangle);
+                    if (!IsCoverBySelectedObject(graphicObject))
+                    {
+                        graphicObject.Draw(graphics, clipRectangle);
+                    }
                 }
             }
         }
@@ -165,6 +169,32 @@ namespace FunnyRectangles.Models
             {
                 return _graphicObjects.LastOrDefault(go => go.ContainsPoint(x, y));
             }
+        }
+        /// <summary>
+        /// Some sort of optimization. Checks if current graphic object is covered by selected one.
+        /// </summary>
+        /// <param name="graphicObject">Object for check</param>
+        /// <returns>Return true if current graphic object is covered by selected on otherwise - false</returns>
+        private bool IsCoverBySelectedObject(IGraphicObject graphicObject)
+        {
+            lock (_selectedObjectLock)
+            {
+                if (_selectedGraphicObject == null ||
+                    graphicObject == _selectedGraphicObject)
+                {
+                    return false;
+                }
+                var selectedBoundRect = _selectedGraphicObject.GetBoundRectangle();
+                var boundRect = graphicObject.GetBoundRectangle();
+
+                var union = Rectangle.Union(selectedBoundRect, boundRect);
+                if (union == selectedBoundRect)
+                {
+                    return true;
+                }
+                return false;
+            }
+           
         }
         #endregion
     }
