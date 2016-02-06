@@ -1,13 +1,12 @@
 ﻿using FunnyRectangles.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FunnyRectangles.Models
 {
+    /// <summary>
+    /// Builds different graphic objects with random parameters.
+    /// </summary>
     class RandomGraphicObjectBuilder : IGraphicObjectBuilder
     {
         #region Constants
@@ -73,14 +72,27 @@ namespace FunnyRectangles.Models
         #endregion
 
         #region Private methods
+        /// <summary>
+        /// Sets rectangle's maximum x-coordinate
+        /// </summary>
         private void SetMaxRectangleX()
         {
             _maxRectangleX = _sceneWidth - _minRectangleWidth;
         }
+        /// <summary>
+        /// Sets rectangle's maximum y-coordinate
+        /// </summary>
         private void SetMaxRectangleY()
         {
             _maxRectangleY = _sceneHeight - _minRectangleHeight;
         }
+        /// <summary>
+        /// Checks validity of all constructor's parameters
+        /// </summary>
+        /// <param name="sceneWidth">Width of the scene</param>
+        /// <param name="sceneHeight">Height of the scene</param>
+        /// <param name="minRectangleWidth">Minimum rectangle width</param>
+        /// <param name="minRectangleHeight">Minmum rectangle height</param>
         private void CheckConstructorArgumentsValidity(int sceneWidth, int sceneHeight, int minRectangleWidth, int minRectangleHeight)
         {
             if (sceneWidth < 0)
@@ -111,6 +123,10 @@ namespace FunnyRectangles.Models
         #endregion
 
         #region IGraphicObjectBuilder
+        /// <summary>
+        /// Creates rectangles with random size, position and color.
+        /// </summary>
+        /// <returns>Created rectangle</returns>
         public IGraphicObject CreateRectangle()
         {
             var random = new Random();
@@ -127,6 +143,11 @@ namespace FunnyRectangles.Models
         #endregion
 
         #region Private methods
+        /// <summary>
+        /// Generates random color
+        /// </summary>
+        /// <param name="random">Object which is used to generate random values for r, g, b color's components</param>
+        /// <returns></returns>
         private Color GetRandomColor(Random random) => Color.FromArgb(random.Next(0, ColorComponentMax), random.Next(0, ColorComponentMax), random.Next(0, ColorComponentMax));
 
         #endregion

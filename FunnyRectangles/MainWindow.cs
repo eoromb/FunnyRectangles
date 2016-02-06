@@ -1,12 +1,6 @@
 ﻿using FunnyRectangles.Models;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace FunnyRectangles
@@ -42,23 +36,22 @@ namespace FunnyRectangles
         #region Overrides
         protected override void OnPaint(PaintEventArgs e)
         {
-            //if (e.ClipRectangle.Left - AutoScrollPosition.X < c_maxX &&
-            //            e.ClipRectangle.Top - AutoScrollPosition.Y < c_maxY)
-            //{
             var graphics = e.Graphics;
+            var clippingRectWithSceneCoordinates = e.ClipRectangle;
+            clippingRectWithSceneCoordinates.Offset(-AutoScrollPosition.X, -AutoScrollPosition.Y);
             graphics.TranslateTransform(AutoScrollPosition.X, AutoScrollPosition.Y);
-            _scene.Draw(graphics, e.ClipRectangle);
-            //graphics.DrawPolygon(_rombPen, _romb);
-            //graphics.DrawPolygon(_trianglePen, _triangle);
-            //graphics.DrawString(_textToDraw, _courierFont, _textBrush, 10, 10);
-            //}
+            _scene.Draw(graphics, /*e.ClipRectangle*/clippingRectWithSceneCoordinates);
+          
             base.OnPaint(e);
         }
         protected override void OnMouseDown(MouseEventArgs e)
         {
-            _scene.BringInFrontObjectAtCoordinates(e.X, e.Y);
+            var rectangleToInvalidate = _scene.BringInFrontObjectAtCoordinates(e.X, e.Y);
             _scene.SelectObjectAtCoordinates(e.X, e.Y);
-            Invalidate();
+            if (rectangleToInvalidate != Rectangle.Empty)
+            {
+                Invalidate(rectangleToInvalidate);
+            }
             _bDragging = true;
             _prevX = e.X;
             _prevy = e.Y;
@@ -77,10 +70,13 @@ namespace FunnyRectangles
             if (_bDragging &&
                 CheckForMinimumMove(e.X, e.Y))
             {
-                var invalidatedRect = _scene.MoveSelectedObject(e.X - _prevX, e.Y - _prevy);
+                var invalidatedRect = _scene.OffsetSelectedObject(e.X - _prevX, e.Y - _prevy);
                 _prevX = e.X;
                 _prevy = e.Y;
-                Invalidate(invalidatedRect);
+                if (invalidatedRect != Rectangle.Empty)
+                {
+                    Invalidate(invalidatedRect);
+                }
             }
             base.OnMouseMove(e);
         }

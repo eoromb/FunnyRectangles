@@ -1,15 +1,10 @@
 ﻿using FunnyRectangles.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FunnyRectangles.Models
 {
     /// <summary>
-    /// Adjusts coordinates offset of graphic objects using simple algorithm: bounding rectangle of graphic objects must not go outside of Rectangle(0, 0, Width, Height).
+    /// Adjusts offset of graphic objects using simple algorithm: bounding rectangle of graphic object must not go outside of Rectangle(0, 0, Width, Height).
     /// </summary>
     class SimpleRectangleOffsetsAdjuster : IOffsetsAdjuster
     {
@@ -35,6 +30,14 @@ namespace FunnyRectangles.Models
         #endregion
 
         #region ICoordinateAdjuster
+        /// <summary>
+        /// Adjusts offsets of graphic object.
+        /// </summary>
+        /// <param name="graphicObject">Graphic object to process</param>
+        /// <param name="dx">Displacement along the x-axis</param>
+        /// <param name="dy">Displacement along the y-axis</param>
+        /// <param name="resDx">Resulting displacement along the x-axis</param>
+        /// <param name="resDy">Resulting displacement along the y-axis</param>
         public void AdjustOffsets(IGraphicObject graphicObject, int dx, int dy, out int resDx, out int resDy)
         {
             if (graphicObject == null)

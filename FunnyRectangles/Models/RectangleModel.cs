@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace FunnyRectangles.Models
 {
+    /// <summary>
+    /// Describes a rectangle
+    /// </summary>
     class RectangleModel : IGraphicObject
     {
         #region Fields and properties
@@ -42,24 +45,44 @@ namespace FunnyRectangles.Models
         #endregion
 
         #region IGraphicObject
-        public void Move(int dx, int dy)
+        /// <summary>
+        /// Offsets rectangle 
+        /// </summary>
+        /// <param name="dx">Displacement along the x-axis</param>
+        /// <param name="dy">Displacement along the y-axis</param>
+        public void Offset(int dx, int dy)
         {
             _rectangle.Offset(dx, dy);
             _boundingRecangle.Offset(dx, dy);
         }
+        /// <summary>
+        /// Draws rectangle on graphics if bounding rectangle intersects with clipping rectangle
+        /// </summary>
+        /// <param name="graphics">Graphics to draw on</param>
+        /// <param name="clipRectangle">Clipping rectangle</param>
         public void Draw(Graphics graphics, Rectangle clipRectangle)
         {
             if (graphics == null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
-            if (_rectangle.IntersectsWith(clipRectangle))
+            if (_boundingRecangle.IntersectsWith(clipRectangle))
             {
                 graphics.FillRectangle(_brush, _rectangle);
                 graphics.DrawRectangle(_pen, _rectangle);
             }
         }
+        /// <summary>
+        /// Check if rectangle contains point
+        /// </summary>
+        /// <param name="x">Point's x-coordinate</param>
+        /// <param name="y">Point's y-coordinate</param>
+        /// <returns>Returns true if rectangle contains point otherwise returns false</returns>
         public bool ContainsPoint(int x, int y) => _rectangle.Contains(x, y);
+        /// <summary>
+        /// Returns bounding rectangle
+        /// </summary>
+        /// <returns>Bounding rectangle</returns>
         public Rectangle GetBoundRectangle() => _boundingRecangle;
         #endregion
 

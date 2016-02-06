@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace FunnyRectangles.Models
 {
+    /// <summary>
+    /// Describe the scene which contains a set of graphic objects. Support several methods which help to manage this objects.
+    /// </summary>
     class Scene
     {
         #region Fields and properties
@@ -64,7 +67,8 @@ namespace FunnyRectangles.Models
         /// </summary>
         /// <param name="x">X-coordinate</param>
         /// <param name="y">Y-coordinate</param>
-        public void BringInFrontObjectAtCoordinates(int x, int y)
+        /// <returns>Returns bounding rectangle that should be invalidated</returns>
+        public Rectangle BringInFrontObjectAtCoordinates(int x, int y)
         {
             lock (_graphicObjects)
             {
@@ -75,17 +79,19 @@ namespace FunnyRectangles.Models
                     {
                         _graphicObjects.Remove(node);
                         _graphicObjects.AddLast(node);
-                        break;
+                        return node.Value.GetBoundRectangle();
+                        
                     }
                     node = node.Previous;
                 }
             }
+            return Rectangle.Empty;
         }
         /// <summary>
         /// Selects graphic objects at point (x;y)
         /// </summary>
-        /// <param name="x">X-coordinates</param>
-        /// <param name="y">Y-coordinates</param>
+        /// <param name="x">X-coordinate</param>
+        /// <param name="y">Y-coordinate</param>
         public void SelectObjectAtCoordinates(int x, int y)
         {
             lock (_selectedObjectLock)
@@ -105,12 +111,12 @@ namespace FunnyRectangles.Models
         }
 
         /// <summary>
-        /// Moves selected graphic object by dx, dy. It is not allowed to move object outside of scene
+        /// Offsets selected graphic object. It is not allowed to offset object outside of scene
         /// </summary>
-        /// <param name="dx">x offset</param>
-        /// <param name="dy">y offset</param>
+        /// <param name="dx">Displacement along the x-axis</param>
+        /// <param name="dy">Displacement along the y-axis</param>
         /// <returns>Returns bounding rectangle that should be invalidated</returns>
-        public Rectangle MoveSelectedObject(int dx, int dy)
+        public Rectangle OffsetSelectedObject(int dx, int dy)
         {
             lock (_selectedObjectLock)
             {
@@ -121,7 +127,7 @@ namespace FunnyRectangles.Models
                     var initialboundingRect = _selectedGraphicObject.GetBoundRectangle();
                     //initialboundingRect.Inflate(1, 1);
                     _offsetAdjuster.AdjustOffsets(_selectedGraphicObject, dx, dy, out resDx, out resDy);
-                    _selectedGraphicObject.Move(resDx, resDy);
+                    _selectedGraphicObject.Offset(resDx, resDy);
                     var resultingboundingRect = _selectedGraphicObject.GetBoundRectangle();
                     //resultingboundingRect.Inflate(1, 1);
                     return Rectangle.Union(initialboundingRect, resultingboundingRect);
